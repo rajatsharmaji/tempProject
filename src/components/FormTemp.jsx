@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Form, Button } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 
-const MyForm = () => {
+const CenteredForm = () => {
+
+   
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
-    message: '',
+    age: '',
   });
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,44 +17,89 @@ const MyForm = () => {
       [name]: value,
     });
   };
-
-  const handleSubmit = async (e) => {
+  
+   const handleSubmit = (e) => {
     e.preventDefault();
-
-    try {
-      const response = await fetch('http://localhost:3000/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+    fetch("http://localhost:3002/user/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json()
+      })
+      .then((data) => {
+        // Handle the response from the server
+        alert("Success");
+      })
+      .catch((error) => {
+        // Handle errors during the fetch
+        console.error("Error:", error);
       });
-
-      if (response.ok) {
-        console.log('Form data sent successfully');
-        // Optionally reset the form after successful submission
-        setFormData({
-          name: '',
-          email: '',
-          message: '',
-        });
-      } else {
-        console.error('Failed to send form data');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
   };
 
-  return (
-    <Form onSubmit={handleSubmit}>
-      {/* ... (your form fields) */}
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   console.log('Form submitted:', formData);
+  //   // Add your form submission logic here
+  // };
 
-      <Button variant="primary" type="submit">
-        Submit
-      </Button>
-    </Form>
+  return (
+    <Container className="mt-5">
+      <Row className="justify-content-center">
+        <Col md={6}>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="formName">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group controlId="password">
+              <Form.Label>password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Enter your password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formAge">
+              <Form.Label>Age</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Enter your age"
+                name="age"
+                value={formData.age}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+
+            <Button variant="primary" type="submit" className="mt-3">
+              Submit
+            </Button>
+          </Form>
+        </Col>
+      </Row>
+      <Row>
+      </Row>
+    </Container>
   );
 };
 
-export default MyForm;
+export default CenteredForm;
